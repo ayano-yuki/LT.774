@@ -1,0 +1,35 @@
+name: Convert PDF to PPTX
+
+on:
+  workflow_dispatch:  # ボタンで発火
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install Poppler
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pdf2image python-pptx tqdm PyPDF2
+
+      - name: Convert PDF to PPTX
+        run: |
+          python .github/workflows/pdf2image2pptx.py slide.pdf slide.pptx
+
+      - name: Upload generated PPTX
+        uses: actions/upload-artifact@v4
+        with:
+          name: slide-pptx
+          path: slide.pptx
